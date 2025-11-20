@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>埃及行程 Timeline (11月21–30日)</title>
+  <style>
+    :root {
+      --line-color: #d0d0ff;
+      --accent: #6c5ce7;
+      --accent-soft: #f3f0ff;
+      --text-main: #222;
+      --text-sub: #555;
+      --bg: #fafbff;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #f8f7ff 0, #f0f4ff 30%, #f5f7fb 100%);
+      color: var(--text-main);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(250, 251, 255, 0.92);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header .subtitle {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    header .now {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 8px;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--line-color), #e0e0ff);
+      opacity: 0.9;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 18px;
+      scroll-margin: 96px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -22px;
+      top: 18px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.12);
+    }
+
+    .timeline-item.active::before {
+      background: var(--accent);
+    }
+
+    .timeline-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 14px 10px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+      border: 1px solid rgba(88, 80, 236, 0.09);
+    }
+
+    .timeline-item.active .timeline-card {
+      background: var(--accent-soft);
+      box-shadow: 0 8px 24px rgba(76, 81, 191, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .date-tag {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(88, 80, 236, 0.08);
+      color: var(--accent);
+    }
+
+    .time-slot {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .city {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .time-range {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .plan {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .details {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .details ul {
+      margin: 2px 0 2px 18px;
+      padding: 0;
+    }
+
+    .details li {
+      margin-bottom: 1px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .meta-note {
+      flex: 1 1 auto;
+    }
+
+    .meta-hotel {
+      flex: 1 1 100%;
+    }
+
+    .meta-cost {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding: 8px 12px;
+      }
+      main {
+        padding: 12px 10px 32px;
+      }
+      .timeline {
+        padding-left: 26px;
+      }
+      .timeline-item::before {
+        left: -18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>埃及行程 Timeline</h1>
+    <div class="subtitle">2025-11-21 至 2025-11-30</div>
+    <div class="now" id="nowText"></div>
+  </header>
+
+  <main>
+    <section class="timeline" id="timeline"></section>
+  </main>
+
+  <script>
+    const TRIP_TIMEZONE = "Africa/Cairo"; // 埃及当地时间
+
+    // 按“天”为粒度的行程 + 酒店信息
+    const tripBlocks = [
+      {
+        id: "2025-11-21-hurghada-arrival",
+        date: "2025-11-21",
+        weekday: "周五",
+        timeSlot: "全天",
+        city: "赫尔格达",
+        plan: "从德国出发，经慕尼黑或法兰克福飞往赫尔格达，抵达后入住公寓，晚间自由活动。",
+        details: [
+          "MUC → HRG · Condor DE24 · 08:20 – 13:30",
+          "FRA → HRG · Condor DE30 · 10:30 – 16:05",
+          "FRA → HRG · Lufthansa LH4374（待补充替代）"
+        ],
+        note: "机场安排司机接机，送达公寓。",
+        hotel: "Lilly Apartments Agency, Turkish Air Lines Building, Elhadaba Rd, Hurghada, Red Sea Governorate 84517, Egypt",
+        cost: "待补充替代",
+        startTime: "08:00",
+        endTime: "23:00"
+      },
+      {
+        id: "2025-11-22-hurghada-dolphin",
+        date: "2025-11-22",
+        weekday: "周六",
+        timeSlot: "白天",
+        city: "赫尔格达",
+        plan: "追海豚与浮潜一日游，傍晚返回赫尔格达，自由活动。",
+        details: [
+          "船上行程：海豚观赏、浮潜等（具体船公司与时刻待补充替代）"
+        ],
+        note: "携带泳具、防晒用品等，晚间在赫尔格达市区活动。",
+        hotel: "Lilly Apartments Agency, Turkish Air Lines Building, Elhadaba Rd, Hurghada, Red Sea Governorate 84517, Egypt",
+        cost: "待补充替代",
+        startTime: "08:00",
+        endTime: "20:00"
+      },
+      {
+        id: "2025-11-23-hurghada-to-luxor",
+        date: "2025-11-23",
+        weekday: "周日",
+        timeSlot: "全天",
+        city: "赫尔格达 → 卢克索",
+        plan: "早晨从赫尔格达公寓出发前往卢克索，途经丹德拉神庙，下午抵达卢克索入住酒店，晚餐在卢克索市区餐厅。",
+        details: [
+          "早上 08:00 出发，从赫尔格达经丹德拉前往卢克索，车程约 3 小时（表中标注）。",
+          "沿途景点：丹德拉神庙（待补充替代具体停留时间）。",
+          "下午：尼罗河东岸卢克索市区自由活动。",
+          "晚餐餐厅推荐：Sofra / Loqma。"
+        ],
+        note: "车上行程中途安排路餐或午餐（待补充替代）。",
+        hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
+        cost: "待补充替代",
+        startTime: "08:00",
+        endTime: "21:30"
+      },
+      {
+        id: "2025-11-24-luxor-balloon-westbank",
+        date: "2025-11-24",
+        weekday: "周一",
+        timeSlot: "清晨至下午",
+        city: "卢克索",
+        plan: "清晨体验热气球项目，之后前往西岸帝王谷、哈特谢普苏特神庙等景点，午餐在 Oriental 餐厅。",
+        details: [
+          "清晨：热气球飞行，预计用时约 3 小时，含接送与飞行（集合时间约 06:00，具体以预订为准）。",
+          "白天：卢克索西岸观光，景点包括帝王谷、王后谷、女王庙等（实际顺序与停留时间以现场安排为准）。",
+          "午餐：Oriental 餐厅，时间约 13:30–15:00。"
+        ],
+        note: "若当天风况不适合热气球，则热气球调整为 11 月 25 日。",
+        hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
+        cost: "待补充替代",
+        startTime: "04:30",
+        endTime: "18:30"
+      },
+      {
+        id: "2025-11-25-luxor-eastbank",
+        date: "2025-11-25",
+        weekday: "周二",
+        timeSlot: "白天与夜间",
+        city: "卢克索",
+        plan: "视天气情况安排热气球备用场次，并参观卡尔纳克神庙与卢克索神庙，夜间可观赏夜景。",
+        details: [
+          "如 11 月 24 日热气球取消，则在 11 月 25 日清晨起飞，时长约 3 小时。",
+          "下午：卡尔纳克神庙（开放时间参考表格：待补充替代具体时间）。",
+          "傍晚或夜间：卢克索神庙参观，推荐观赏夜景（开放至晚间，具体时间待补充替代）。"
+        ],
+        note: "当日根据热气球安排与景区开放时间进行微调。",
+        hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
+        cost: "待补充替代",
+        startTime: "06:00",
+        endTime: "22:00"
+      },
+      {
+        id: "2025-11-26-luxor-to-cairo",
+        date: "2025-11-26",
+        weekday: "周三",
+        timeSlot: "上午至晚上",
+        city: "卢克索 → 开罗",
+        plan: "上午在卢克索自由活动，下午乘机前往开罗，晚上在吉萨金字塔附近酒店入住并自由活动。",
+        details: [
+          "上午：卢克索市区漫步与自由时间。",
+          "下午：卢克索飞往开罗，航班 LXR → CAI · EgyptAir MS75 · 14:20 – 15:30。",
+          "晚上：酒店周边自由活动。"
+        ],
+        note: "航班已经确认为 MS75，需提前到达机场办理登机手续。",
+        hotel: "West Pyramids Hotel, 4 Abou Al Hool Al Seiahi, Giza, 3514542 Cairo, Egypt",
+        cost: "待补充替代",
+        startTime: "09:00",
+        endTime: "22:30"
+      },
+      {
+        id: "2025-11-27-cairo-old-city",
+        date: "2025-11-27",
+        weekday: "周四",
+        timeSlot: "全天",
+        city: "开罗",
+        plan: "参观萨拉丁城堡与穆罕默德·阿里清真寺，下午参观埃及博物馆，晚上登开罗塔并在旋转餐厅用餐。",
+        details: [
+          "上午：萨拉丁城堡 + 穆罕默德·阿里清真寺，避开中午高温。",
+          "下午：埃及博物馆参观，控制在约 2 小时内，避免过度疲劳。",
+          "晚上：开罗塔，旋转餐厅晚餐。"
+        ],
+        note: "登塔与餐厅需要提前预订时间段。",
+        hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
+        cost: "待补充替代",
+        startTime: "09:00",
+        endTime: "22:30"
+      },
+      {
+        id: "2025-11-28-giza-gem",
+        date: "2025-11-28",
+        weekday: "周五",
+        timeSlot: "全天",
+        city: "开罗",
+        plan: "前往吉萨金字塔景区与狮身人面像，大埃及博物馆（GEM），晚上休息。",
+        details: [
+          "上午：吉萨金字塔群 + 狮身人面像，注意穿着舒适、便于行走与防晒。",
+          "下午：大埃及博物馆（GEM），按预约时段参观。",
+          "晚上：返回住宿地休息。"
+        ],
+        note: "GEM 开放安排可能根据官方通知调整，具体参观时段待补充替代。",
+        hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
+        cost: "待补充替代",
+        startTime: "09:00",
+        endTime: "22:00"
+      },
+      {
+        id: "2025-11-29-cairo-museums-bazaar",
+        date: "2025-11-29",
+        weekday: "周六",
+        timeSlot: "全天",
+        city: "开罗",
+        plan: "参观文明类博物馆与洞穴教堂，下午前往哈利利市集与 Zamalek 半岛 city walk，晚上返回酒店或在本地餐厅用餐。",
+        details: [
+          "上午：埃及文明相关博物馆（具体馆名与时间待补充替代），预计早上出发。",
+          "中午：洞穴教堂（Cave Church）参观，出发时间参考表格安排（待补充替代）。",
+          "下午：哈利利市集 + Zamalek 半岛 city walk。",
+          "晚上：酒店休息或附近本地餐厅轻食。"
+        ],
+        note: "当日为城市文化与市集体验日，节奏可根据实际情况略作调整。",
+        hotel: "Cairo Heliopolis Apartment, 1, Heliopolis, 11799 Cairo, Egypt",
+        cost: "待补充替代",
+        startTime: "08:30",
+        endTime: "22:30"
+      },
+      {
+        id: "2025-11-30-return-to-germany",
+        date: "2025-11-30",
+        weekday: "周日",
+        timeSlot: "上午至晚上",
+        city: "开罗 → 德国",
+        plan: "从开罗机场出发，经法兰克福或慕尼黑返回德国，结束本次行程。",
+        details: [
+          "CAI → MUC · EgyptAir MS787 · 10:05 – 13:10。",
+          "CAI → FRA · Lufthansa LH583 · 16:55 – 20:30。",
+          "根据机票实际信息选择对应航班。"
+        ],
+        note: "需预留约 3 小时在机场办理值机与安检等手续。",
+        hotel: "无（前一晚入住 Cairo Heliopolis Apartment，清晨退房前往机场）。",
+        cost: "待补充替代",
+        startTime: "06:00",
+        endTime: "23:00"
+      }
+    ];
+
+    // 工具函数：转换到指定时区的 Date
+    function toZonedDate(dateStr, timeStr, timeZone) {
+      const [year, month, day] = dateStr.split("-").map(Number);
+      const [hour, minute] = timeStr.split(":").map(Number);
+      const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+      const parts = formatter.formatToParts(utcDate);
+      const obj = {};
+      for (const p of parts) obj[p.type] = p.value;
+      return new Date(
+        Number(obj.year),
+        Number(obj.month) - 1,
+        Number(obj.day),
+        Number(obj.hour),
+        Number(obj.minute)
+      );
+    }
+
+    function getNowInTripTZ() {
+      const now = new Date();
+      const str = now.toLocaleString("en-US", { timeZone: TRIP_TIMEZONE });
+      return new Date(str);
+    }
+
+    // 预处理：计算 block 开始结束时间并排序
+    tripBlocks.forEach(block => {
+      block.startDate = toZonedDate(block.date, block.startTime, TRIP_TIMEZONE);
+      block.endDate = toZonedDate(block.date, block.endTime, TRIP_TIMEZONE);
+    });
+    tripBlocks.sort((a, b) => a.startDate - b.startDate);
+
+    const timelineEl = document.getElementById("timeline");
+
+    function renderTimeline() {
+      timelineEl.innerHTML = "";
+      for (const block of tripBlocks) {
+        const item = document.createElement("article");
+        item.className = "timeline-item";
+        item.dataset.blockId = block.id;
+
+        const card = document.createElement("div");
+        card.className = "timeline-card";
+
+        const topRow = document.createElement("div");
+        topRow.className = "top-row";
+
+        const dateTag = document.createElement("div");
+        dateTag.className = "date-tag";
+        dateTag.textContent = `${block.date} ${block.weekday}`;
+
+        const timeSlot = document.createElement("div");
+        timeSlot.className = "time-slot";
+        timeSlot.textContent = block.timeSlot;
+
+        const city = document.createElement("div");
+        city.className = "city";
+        city.textContent = block.city;
+
+        const timeRange = document.createElement("div");
+        timeRange.className = "time-range";
+        timeRange.textContent = `${block.startTime} – ${block.endTime}（当地时间）`;
+
+        topRow.appendChild(dateTag);
+        topRow.appendChild(timeSlot);
+        topRow.appendChild(city);
+        topRow.appendChild(timeRange);
+
+        const plan = document.createElement("div");
+        plan.className = "plan";
+        plan.textContent = block.plan;
+
+        const details = document.createElement("div");
+        details.className = "details";
+        if (block.details && block.details.length) {
+          const list = document.createElement("ul");
+          for (const d of block.details) {
+            const li = document.createElement("li");
+            li.textContent = d;
+            list.appendChild(li);
+          }
+          details.appendChild(list);
+        }
+
+        const metaRow = document.createElement("div");
+        metaRow.className = "meta-row";
+
+        const hotelEl = document.createElement("div");
+        hotelEl.className = "meta-hotel";
+        hotelEl.innerHTML = `<span class="meta-label">入住酒店：</span>${block.hotel || "待补充替代"}`;
+
+        const noteEl = document.createElement("div");
+        noteEl.className = "meta-note";
+        noteEl.innerHTML = `<span class="meta-label">备注：</span>${block.note || "待补充替代"}`;
+
+        const costEl = document.createElement("div");
+        costEl.className = "meta-cost";
+        costEl.innerHTML = `<span class="meta-label">费用/人：</span>${block.cost || "待补充替代"}`;
+
+        metaRow.appendChild(hotelEl);
+        metaRow.appendChild(noteEl);
+        metaRow.appendChild(costEl);
+
+        card.appendChild(topRow);
+        card.appendChild(plan);
+        card.appendChild(details);
+        card.appendChild(metaRow);
+
+        item.appendChild(card);
+        timelineEl.appendChild(item);
+      }
+    }
+
+    function activateCurrentBlock() {
+      const now = getNowInTripTZ();
+      document.getElementById("nowText").textContent =
+        `当前埃及时间：${now.toLocaleString("zh-CN", { timeZone: TRIP_TIMEZONE })}`;
+
+      let current = tripBlocks[0];
+      for (const block of tripBlocks) {
+        if (now >= block.startDate && now <= block.endDate) {
+          current = block;
+          break;
+        }
+        if (now > block.startDate) {
+          current = block;
+        }
+      }
+
+      document
+        .querySelectorAll(".timeline-item")
+        .forEach(el => el.classList.remove("active"));
+
+      const activeEl = document.querySelector(
+        `.timeline-item[data-block-id="${current.id}"]`
+      );
+      if (activeEl) {
+        activeEl.classList.add("active");
+        activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    renderTimeline();
+    activateCurrentBlock();
+    setInterval(activateCurrentBlock, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
