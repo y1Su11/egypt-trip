@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>埃及行程 Timeline (11月21–30日)</title>
+  <title>埃及行程 Timeline & Wiki</title>
   <style>
     :root {
       --line-color: #d0d0ff;
@@ -29,15 +29,15 @@
     header {
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
       backdrop-filter: blur(10px);
-      background: rgba(250, 251, 255, 0.92);
+      background: rgba(250, 251, 255, 0.96);
       border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-      padding: 12px 24px;
+      padding: 10px 24px 6px;
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
-      gap: 8px 24px;
+      gap: 6px 16px;
     }
 
     header h1 {
@@ -57,10 +57,46 @@
       white-space: nowrap;
     }
 
+    .page-nav {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 13px;
+      border: 1px solid rgba(88, 80, 236, 0.3);
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(76, 81, 191, 0.35);
+    }
+
     main {
       max-width: 960px;
       margin: 0 auto;
       padding: 16px 16px 40px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Timeline layout */
+
+    .timeline-view {
+      margin-top: 4px;
     }
 
     .timeline {
@@ -198,9 +234,86 @@
       white-space: nowrap;
     }
 
+    /* Wiki layout */
+
+    .wiki-view {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .wiki-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 14px 12px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+      border: 1px solid rgba(88, 80, 236, 0.09);
+    }
+
+    .wiki-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .wiki-subtitle {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .num-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .num-table th,
+    .num-table td {
+      border: 1px solid #e0e3ff;
+      padding: 4px 6px;
+      text-align: center;
+    }
+
+    .num-table th {
+      background: #f5f6ff;
+      font-weight: 600;
+    }
+
+    .egp-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .egp-img-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .egp-img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .egp-caption {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    @media (max-width: 768px) {
+      .egp-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
     @media (max-width: 640px) {
       header {
-        padding: 8px 12px;
+        padding: 8px 12px 4px;
       }
       main {
         padding: 12px 10px 32px;
@@ -211,24 +324,110 @@
       .timeline-item::before {
         left: -18px;
       }
+      .now {
+        width: 100%;
+        text-align: left;
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>埃及行程 Timeline</h1>
-    <div class="subtitle">2025-11-21 至 2025-11-30</div>
+    <div>
+      <h1>埃及行程 · Timeline & Wiki</h1>
+      <div class="subtitle">2025-11-21 至 2025-11-30</div>
+    </div>
     <div class="now" id="nowText"></div>
+    <nav class="page-nav">
+      <button class="nav-btn active" data-target="timelineView">Timeline</button>
+      <button class="nav-btn" data-target="wikiView">Wiki</button>
+    </nav>
   </header>
 
   <main>
-    <section class="timeline" id="timeline"></section>
+    <!-- 行程视图 -->
+    <section class="timeline-view" id="timelineView">
+      <section class="timeline" id="timeline"></section>
+    </section>
+
+    <!-- Wiki 视图 -->
+    <section class="wiki-view hidden" id="wikiView">
+      <!-- 数字对应表 -->
+      <article class="wiki-card">
+        <div class="wiki-title">埃及常用数字（东阿拉伯数字）与阿拉伯数字对照表</div>
+        <div class="wiki-subtitle">
+          在埃及的票价、菜单、车牌、纸币正面等位置，经常使用东阿拉伯数字（٠١٢٣٤٥٦٧٨٩）。下面的表格给出与常见阿拉伯数字（0–9）的对应关系。:contentReference[oaicite:2]{index=2}
+        </div>
+        <table class="num-table">
+          <thead>
+            <tr>
+              <th>阿拉伯数字</th>
+              <th>埃及常用数字</th>
+              <th>示例金额写法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>٠</td><td>٠ ج.م （0 埃磅）</td></tr>
+            <tr><td>1</td><td>١</td><td>١ ج.م （1 埃磅）</td></tr>
+            <tr><td>2</td><td>٢</td><td>٢ ج.م</td></tr>
+            <tr><td>3</td><td>٣</td><td>٣ ج.م</td></tr>
+            <tr><td>4</td><td>٤</td><td>٤ ج.م</td></tr>
+            <tr><td>5</td><td>٥</td><td>٥ ج.م</td></tr>
+            <tr><td>6</td><td>٦</td><td>٦ ج.م</td></tr>
+            <tr><td>7</td><td>٧</td><td>٧ ج.م</td></tr>
+            <tr><td>8</td><td>٨</td><td>٨ ج.م</td></tr>
+            <tr><td>9</td><td>٩</td><td>٩ ج.م</td></tr>
+          </tbody>
+        </table>
+      </article>
+
+      <!-- 埃磅介绍 + 图片 -->
+      <article class="wiki-card">
+        <div class="wiki-title">埃及货币：埃磅（Egyptian Pound, EGP）</div>
+        <div class="wiki-subtitle">
+          埃及法定货币为埃及镑（Egyptian pound），ISO 代码 <strong>EGP</strong>，常见记号有 <strong>E£ / LE / ج.م</strong>。一埃磅等于 100 皮阿斯特（piastre / qirsh）。
+        </div>
+
+        <div class="egp-grid">
+
+          <div class="egp-img-wrap">
+            <div class="egp-caption"><a href="https://en.wikipedia.org/wiki/Egyptian_pound#Coins" target="_blank">硬币示例：参见Wikipedia</div>
+
+            <div class="egp-caption"><a href="https://en.wikipedia.org/wiki/Egyptian_pound#Banknotes" target="_blank">纸币示例：参见Wikipedia</div>
+          </div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
-    const TRIP_TIMEZONE = "Africa/Cairo"; // 埃及当地时间
+    const TRIP_TIMEZONE = "Africa/Cairo";
 
-    // 按“天”为粒度的行程 + 酒店信息
+    // 顶部菜单切换
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const views = {
+      timelineView: document.getElementById("timelineView"),
+      wikiView: document.getElementById("wikiView")
+    };
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        navButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const target = btn.dataset.target;
+        Object.entries(views).forEach(([id, el]) => {
+          if (id === target) {
+            el.classList.remove("hidden");
+          } else {
+            el.classList.add("hidden");
+          }
+        });
+      });
+    });
+
+    // 行程数据（与之前相同，补全了酒店信息）
     const tripBlocks = [
       {
         id: "2025-11-21-hurghada-arrival",
@@ -272,8 +471,8 @@
         city: "赫尔格达 → 卢克索",
         plan: "早晨从赫尔格达公寓出发前往卢克索，途经丹德拉神庙，下午抵达卢克索入住酒店，晚餐在卢克索市区餐厅。",
         details: [
-          "早上 08:00 出发，从赫尔格达经丹德拉前往卢克索，车程约 3 小时（表中标注）。",
-          "沿途景点：丹德拉神庙（待补充替代具体停留时间）。",
+          "早上 08:00 出发，从赫尔格达经丹德拉前往卢克索，车程约 3 小时。",
+          "沿途景点：丹德拉神庙（停留时间待补充替代）。",
           "下午：尼罗河东岸卢克索市区自由活动。",
           "晚餐餐厅推荐：Sofra / Loqma。"
         ],
@@ -291,8 +490,8 @@
         city: "卢克索",
         plan: "清晨体验热气球项目，之后前往西岸帝王谷、哈特谢普苏特神庙等景点，午餐在 Oriental 餐厅。",
         details: [
-          "清晨：热气球飞行，预计用时约 3 小时，含接送与飞行（集合时间约 06:00，具体以预订为准）。",
-          "白天：卢克索西岸观光，景点包括帝王谷、王后谷、女王庙等（实际顺序与停留时间以现场安排为准）。",
+          "清晨：热气球飞行，预计用时约 3 小时，含接送与飞行（集合时间约 06:00，实际以预订为准）。",
+          "白天：卢克索西岸观光，景点包括帝王谷、王后谷、女王庙等。",
           "午餐：Oriental 餐厅，时间约 13:30–15:00。"
         ],
         note: "若当天风况不适合热气球，则热气球调整为 11 月 25 日。",
@@ -307,11 +506,11 @@
         weekday: "周二",
         timeSlot: "白天与夜间",
         city: "卢克索",
-        plan: "视天气情况安排热气球备用场次，并参观卡尔纳克神庙与卢克索神庙，夜间可观赏夜景。",
+        plan: "视天气情况安排热气球备用场次，并参观卡尔纳克神庙与卢克索神庙，夜间观赏夜景。",
         details: [
           "如 11 月 24 日热气球取消，则在 11 月 25 日清晨起飞，时长约 3 小时。",
-          "下午：卡尔纳克神庙（开放时间参考表格：待补充替代具体时间）。",
-          "傍晚或夜间：卢克索神庙参观，推荐观赏夜景（开放至晚间，具体时间待补充替代）。"
+          "下午：卡尔纳克神庙参观（开放时间待补充替代）。",
+          "傍晚或夜间：卢克索神庙夜景。"
         ],
         note: "当日根据热气球安排与景区开放时间进行微调。",
         hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
@@ -325,13 +524,13 @@
         weekday: "周三",
         timeSlot: "上午至晚上",
         city: "卢克索 → 开罗",
-        plan: "上午在卢克索自由活动，下午乘机前往开罗，晚上在吉萨金字塔附近酒店入住并自由活动。",
+        plan: "上午在卢克索自由活动，下午乘机前往开罗，晚上在金字塔附近酒店入住并自由活动。",
         details: [
           "上午：卢克索市区漫步与自由时间。",
           "下午：卢克索飞往开罗，航班 LXR → CAI · EgyptAir MS75 · 14:20 – 15:30。",
           "晚上：酒店周边自由活动。"
         ],
-        note: "航班已经确认为 MS75，需提前到达机场办理登机手续。",
+        note: "航班为 MS75，需提前到达机场办理登机手续。",
         hotel: "West Pyramids Hotel, 4 Abou Al Hool Al Seiahi, Giza, 3514542 Cairo, Egypt",
         cost: "待补充替代",
         startTime: "09:00",
@@ -345,11 +544,11 @@
         city: "开罗",
         plan: "参观萨拉丁城堡与穆罕默德·阿里清真寺，下午参观埃及博物馆，晚上登开罗塔并在旋转餐厅用餐。",
         details: [
-          "上午：萨拉丁城堡 + 穆罕默德·阿里清真寺，避开中午高温。",
-          "下午：埃及博物馆参观，控制在约 2 小时内，避免过度疲劳。",
+          "上午：萨拉丁城堡 + 穆罕默德·阿里清真寺。",
+          "下午：埃及博物馆参观，控制在约 2 小时内。",
           "晚上：开罗塔，旋转餐厅晚餐。"
         ],
-        note: "登塔与餐厅需要提前预订时间段。",
+        note: "登塔与餐厅建议提前预订时间。",
         hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
         cost: "待补充替代",
         startTime: "09:00",
@@ -363,11 +562,11 @@
         city: "开罗",
         plan: "前往吉萨金字塔景区与狮身人面像，大埃及博物馆（GEM），晚上休息。",
         details: [
-          "上午：吉萨金字塔群 + 狮身人面像，注意穿着舒适、便于行走与防晒。",
-          "下午：大埃及博物馆（GEM），按预约时段参观。",
+          "上午：吉萨金字塔群 + 狮身人面像。",
+          "下午：大埃及博物馆（GEM）参观。",
           "晚上：返回住宿地休息。"
         ],
-        note: "GEM 开放安排可能根据官方通知调整，具体参观时段待补充替代。",
+        note: "GEM 开放安排与参观时段依官网通知更新。",
         hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
         cost: "待补充替代",
         startTime: "09:00",
@@ -379,14 +578,14 @@
         weekday: "周六",
         timeSlot: "全天",
         city: "开罗",
-        plan: "参观文明类博物馆与洞穴教堂，下午前往哈利利市集与 Zamalek 半岛 city walk，晚上返回酒店或在本地餐厅用餐。",
+        plan: "参观文明类博物馆与洞穴教堂，下午前往哈利利市集与 Zamalek 半岛 city walk，晚上在本地餐厅用餐。",
         details: [
-          "上午：埃及文明相关博物馆（具体馆名与时间待补充替代），预计早上出发。",
-          "中午：洞穴教堂（Cave Church）参观，出发时间参考表格安排（待补充替代）。",
+          "上午：文明类博物馆（具体名称与时间待补充替代）。",
+          "中午：洞穴教堂（Cave Church），出发时间参考预订安排。",
           "下午：哈利利市集 + Zamalek 半岛 city walk。",
-          "晚上：酒店休息或附近本地餐厅轻食。"
+          "晚上：酒店附近餐厅或轻食。"
         ],
-        note: "当日为城市文化与市集体验日，节奏可根据实际情况略作调整。",
+        note: "当日为城市文化与市集体验日，节奏可根据实际情况调整。",
         hotel: "Cairo Heliopolis Apartment, 1, Heliopolis, 11799 Cairo, Egypt",
         cost: "待补充替代",
         startTime: "08:30",
@@ -412,7 +611,6 @@
       }
     ];
 
-    // 工具函数：转换到指定时区的 Date
     function toZonedDate(dateStr, timeStr, timeZone) {
       const [year, month, day] = dateStr.split("-").map(Number);
       const [hour, minute] = timeStr.split(":").map(Number);
@@ -444,7 +642,7 @@
       return new Date(str);
     }
 
-    // 预处理：计算 block 开始结束时间并排序
+    // 预处理：计算开始结束时间并排序
     tripBlocks.forEach(block => {
       block.startDate = toZonedDate(block.date, block.startTime, TRIP_TIMEZONE);
       block.endDate = toZonedDate(block.date, block.endTime, TRIP_TIMEZONE);
