@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>埃及行程 Timeline & Wiki</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --line-color: #d0d0ff;
@@ -31,9 +32,9 @@
       top: 0;
       z-index: 20;
       backdrop-filter: blur(10px);
-      background: rgba(250, 251, 255, 0.96);
+      background: rgba(250, 251, 255, 0.92);
       border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-      padding: 10px 24px 6px;
+      padding: 10px 16px;
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
@@ -42,66 +43,91 @@
 
     header h1 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
     }
 
     header .subtitle {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-sub);
     }
 
     header .now {
       margin-left: auto;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent);
       white-space: nowrap;
-    }
-
-    .page-nav {
-      width: 100%;
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    .nav-btn {
-      border-radius: 999px;
-      padding: 4px 14px;
-      font-size: 13px;
-      border: 1px solid rgba(88, 80, 236, 0.3);
-      background: rgba(255, 255, 255, 0.9);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .nav-btn.active {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(76, 81, 191, 0.35);
     }
 
     main {
       max-width: 960px;
       margin: 0 auto;
-      padding: 16px 16px 40px;
+      padding: 10px 10px 32px;
     }
 
-    .hidden {
+    /* 布局：左侧菜单 + 右侧内容（移动端变成上下） */
+    .app-layout {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .app-nav {
+      position: sticky;
+      top: 54px;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 120px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+      border: 1px solid rgba(88, 80, 236, 0.08);
+    }
+
+    .nav-item {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background: transparent;
+      text-align: left;
+      color: var(--text-sub);
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    }
+
+    .nav-item:hover {
+      background: rgba(108, 92, 231, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .nav-item.nav-active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(76, 81, 191, 0.35);
+    }
+
+    .app-content {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .page {
       display: none;
     }
 
-    /* Timeline layout */
-
-    .timeline-view {
-      margin-top: 4px;
+    .page.page-active {
+      display: block;
     }
+
+    /* ---- Timeline 样式 ---- */
 
     .timeline {
       position: relative;
-      margin-top: 8px;
+      margin-top: 4px;
       padding-left: 32px;
     }
 
@@ -234,200 +260,221 @@
       white-space: nowrap;
     }
 
-    /* Wiki layout */
+    /* ---- Wiki 页样式 ---- */
 
-    .wiki-view {
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .wiki-intro {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+
+    .wiki-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
     }
 
     .wiki-card {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 12px 14px 12px;
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
-      border: 1px solid rgba(88, 80, 236, 0.09);
-    }
-
-    .wiki-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .wiki-subtitle {
+      padding: 12px 14px 10px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      border: 1px solid rgba(88, 80, 236, 0.06);
       font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 8px;
     }
 
-    .num-table {
+    .wiki-card h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .wiki-card p {
+      margin: 4px 0;
+    }
+
+    .digit-table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 4px;
       font-size: 14px;
-    }
-
-    .num-table th,
-    .num-table td {
-      border: 1px solid #e0e3ff;
-      padding: 4px 6px;
       text-align: center;
     }
 
-    .num-table th {
-      background: #f5f6ff;
-      font-weight: 600;
+    .digit-table th,
+    .digit-table td {
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 4px 6px;
     }
 
-    .egp-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 12px;
+    .digit-table th {
+      background: rgba(108, 92, 231, 0.06);
     }
 
-    .egp-img-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
+    .arabic-digit {
+      font-size: 20px;
     }
 
     .egp-img {
-      max-width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ddd;
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+      margin-bottom: 4px;
+      object-fit: cover;
+      max-height: 180px;
     }
 
-    .egp-caption {
-      font-size: 12px;
-      color: var(--text-sub);
+    .wiki-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(88, 80, 236, 0.08);
+      color: var(--accent);
+      margin-bottom: 4px;
     }
 
     @media (max-width: 768px) {
-      .egp-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    @media (max-width: 640px) {
       header {
-        padding: 8px 12px 4px;
+        padding: 8px 10px;
       }
+
+      header h1 {
+        font-size: 16px;
+      }
+
       main {
-        padding: 12px 10px 32px;
+        padding: 8px 8px 24px;
       }
+
+      .app-layout {
+        flex-direction: column;
+      }
+
+      .app-nav {
+        position: sticky;
+        top: 46px;
+        flex-direction: row;
+        justify-content: center;
+        min-width: 0;
+      }
+
+      .nav-item {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
       .timeline {
         padding-left: 26px;
       }
+
       .timeline-item::before {
         left: -18px;
-      }
-      .now {
-        width: 100%;
-        text-align: left;
-        margin-left: 0;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <h1>埃及行程 · Timeline & Wiki</h1>
-      <div class="subtitle">2025-11-21 至 2025-11-30</div>
-    </div>
+    <h1>埃及行程 Timeline & Wiki</h1>
+    <div class="subtitle">2025-11-21 至 2025-11-30</div>
     <div class="now" id="nowText"></div>
-    <nav class="page-nav">
-      <button class="nav-btn active" data-target="timelineView">Timeline</button>
-      <button class="nav-btn" data-target="wikiView">Wiki</button>
-    </nav>
   </header>
 
   <main>
-    <!-- 行程视图 -->
-    <section class="timeline-view" id="timelineView">
-      <section class="timeline" id="timeline"></section>
-    </section>
+    <div class="app-layout">
+      <!-- 左侧 / 顶部菜单 -->
+      <nav class="app-nav">
+        <button class="nav-item nav-active" data-page="timeline">Timeline</button>
+        <button class="nav-item" data-page="wiki">Wiki</button>
+      </nav>
 
-    <!-- Wiki 视图 -->
-    <section class="wiki-view hidden" id="wikiView">
-      <!-- 数字对应表 -->
-      <article class="wiki-card">
-        <div class="wiki-title">埃及常用数字（东阿拉伯数字）与阿拉伯数字对照表</div>
-        <div class="wiki-subtitle">
-          在埃及的票价、菜单、车牌、纸币正面等位置，经常使用东阿拉伯数字（٠١٢٣٤٥٦٧٨٩）。下面的表格给出与常见阿拉伯数字（0–9）的对应关系。:contentReference[oaicite:2]{index=2}
-        </div>
-        <table class="num-table">
-          <thead>
-            <tr>
-              <th>阿拉伯数字</th>
-              <th>埃及常用数字</th>
-              <th>示例金额写法</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>0</td><td>٠</td><td>٠ ج.م （0 埃磅）</td></tr>
-            <tr><td>1</td><td>١</td><td>١ ج.م （1 埃磅）</td></tr>
-            <tr><td>2</td><td>٢</td><td>٢ ج.م</td></tr>
-            <tr><td>3</td><td>٣</td><td>٣ ج.م</td></tr>
-            <tr><td>4</td><td>٤</td><td>٤ ج.م</td></tr>
-            <tr><td>5</td><td>٥</td><td>٥ ج.م</td></tr>
-            <tr><td>6</td><td>٦</td><td>٦ ج.م</td></tr>
-            <tr><td>7</td><td>٧</td><td>٧ ج.م</td></tr>
-            <tr><td>8</td><td>٨</td><td>٨ ج.م</td></tr>
-            <tr><td>9</td><td>٩</td><td>٩ ج.م</td></tr>
-          </tbody>
-        </table>
-      </article>
+      <!-- 右侧内容区域 -->
+      <div class="app-content">
+        <!-- Timeline 页面 -->
+        <section id="page-timeline" class="page page-active">
+          <section class="timeline" id="timeline"></section>
+        </section>
 
-      <!-- 埃磅介绍 + 图片 -->
-      <article class="wiki-card">
-        <div class="wiki-title">埃及货币：埃磅（Egyptian Pound, EGP）</div>
-        <div class="wiki-subtitle">
-          埃及法定货币为埃及镑（Egyptian pound），ISO 代码 <strong>EGP</strong>，常见记号有 <strong>E£ / LE / ج.م</strong>。一埃磅等于 100 皮阿斯特（piastre / qirsh）。
-        </div>
+        <!-- Wiki 页面 -->
+        <section id="page-wiki" class="page">
+          <p class="wiki-intro">
+            Wiki 页面整理了一些在埃及旅行时常见的数字写法与货币信息，方便快速对照。
+          </p>
 
-        <div class="egp-grid">
+          <div class="wiki-grid">
+            <!-- 数字对应 -->
+            <article class="wiki-card">
+              <h2>埃及常用数字：阿拉伯数字对照</h2>
+              <span class="wiki-badge">Arabic-Indic Numerals</span>
+              <p>
+                在埃及使用阿拉伯语时，经常能看到一组“东阿拉伯数字”，写法是
+                <span class="arabic-digit">٠١٢٣٤٥٦٧٨٩</span>。下面是与常用 0–9 的对应关系：
+              </p>
+              <table class="digit-table">
+                <thead>
+                  <tr>
+                    <th>西方数字</th>
+                    <th>东阿拉伯数字</th>
+                    <th>读音（近似拼法）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td class="arabic-digit">٠</td><td>sifr</td></tr>
+                  <tr><td>1</td><td class="arabic-digit">١</td><td>wāḥed</td></tr>
+                  <tr><td>2</td><td class="arabic-digit">٢</td><td>etnēn</td></tr>
+                  <tr><td>3</td><td class="arabic-digit">٣</td><td>talāta</td></tr>
+                  <tr><td>4</td><td class="arabic-digit">٤</td><td>ʾarbaʿa</td></tr>
+                  <tr><td>5</td><td class="arabic-digit">٥</td><td>xamsa</td></tr>
+                  <tr><td>6</td><td class="arabic-digit">٦</td><td>sitta</td></tr>
+                  <tr><td>7</td><td class="arabic-digit">٧</td><td>sabaʿa</td></tr>
+                  <tr><td>8</td><td class="arabic-digit">٨</td><td>tamanya</td></tr>
+                  <tr><td>9</td><td class="arabic-digit">٩</td><td>tisʿa</td></tr>
+                </tbody>
+              </table>
+              <p>
+                超市价签、出租车牌照、餐厅账单等，经常会同时出现西方数字和这组东阿拉伯数字。
+              </p>
+            </article>
 
-          <div class="egp-img-wrap">
-            <div class="egp-caption"><a href="https://en.wikipedia.org/wiki/Egyptian_pound#Coins" target="_blank">硬币示例：参见Wikipedia</div>
-
-            <div class="egp-caption"><a href="https://en.wikipedia.org/wiki/Egyptian_pound#Banknotes" target="_blank">纸币示例：参见Wikipedia</div>
+            <!-- 货币介绍 -->
+            <article class="wiki-card">
+              <h2>埃磅简介（Egyptian Pound, EGP）</h2>
+              <span class="wiki-badge">جنيه مصري · LE / E£</span>
+              <p>
+                埃及官方货币为 <strong>埃磅（Egyptian Pound, 货币代码 EGP）</strong>，阿拉伯语写作
+                <strong>جنيه مصري</strong>。1 埃磅 = 100 皮阿斯特（piastre / qirsh）。
+              </p>
+              <p>常见面额：</p>
+              <ul>
+                <li>纸币：5, 10, 20, 50, 100, 200 埃磅。</li>
+                <li>硬币：主要流通 1 埃磅硬币，有时还能见到 50 皮阿斯特硬币。</li>
+              </ul>
+              <p>
+                纸币正面一般是清真寺等伊斯兰建筑，背面多为古埃及神庙或雕像。账单上金额位置通常使用
+                东阿拉伯数字，英文账单则使用西方数字。
+              </p>
+			  
+			  <div class="egp-img-wrap">
+			  <div class="egp-caption">
+				<a href="https://en.wikipedia.org/wiki/Egyptian_pound#Coins" target="_blank">硬币示例：参见Wikipedia
+			  </div>
+			  
+			  <div class="egp-caption">
+				<a href="https://en.wikipedia.org/wiki/Egyptian_pound#Banknotes" target="_blank">纸币示例：参见Wikipedia
+			  </div>
           </div>
-        </div>
-      </article>
-    </section>
+            </article>
+			
+          </div>
+        </section>
+      </div>
+    </div>
   </main>
 
   <script>
     const TRIP_TIMEZONE = "Africa/Cairo";
 
-    // 顶部菜单切换
-    const navButtons = document.querySelectorAll(".nav-btn");
-    const views = {
-      timelineView: document.getElementById("timelineView"),
-      wikiView: document.getElementById("wikiView")
-    };
-
-    navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        navButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const target = btn.dataset.target;
-        Object.entries(views).forEach(([id, el]) => {
-          if (id === target) {
-            el.classList.remove("hidden");
-          } else {
-            el.classList.add("hidden");
-          }
-        });
-      });
-    });
-
-    // 行程数据（与之前相同，补全了酒店信息）
+    // ---- Timeline 数据：与之前版本相同，可继续在这里微调 ----
     const tripBlocks = [
       {
         id: "2025-11-21-hurghada-arrival",
@@ -457,7 +504,7 @@
         details: [
           "船上行程：海豚观赏、浮潜等（具体船公司与时刻待补充替代）"
         ],
-        note: "携带泳具、防晒用品等，晚间在赫尔格达市区活动。",
+        note: "需自备泳具、防晒用品等。",
         hotel: "Lilly Apartments Agency, Turkish Air Lines Building, Elhadaba Rd, Hurghada, Red Sea Governorate 84517, Egypt",
         cost: "待补充替代",
         startTime: "08:00",
@@ -469,14 +516,14 @@
         weekday: "周日",
         timeSlot: "全天",
         city: "赫尔格达 → 卢克索",
-        plan: "早晨从赫尔格达公寓出发前往卢克索，途经丹德拉神庙，下午抵达卢克索入住酒店，晚餐在卢克索市区餐厅。",
+        plan: "从赫尔格达出发前往卢克索，途中参观丹德拉神庙，下午抵达卢克索入住酒店，晚餐在卢克索市区餐厅。",
         details: [
-          "早上 08:00 出发，从赫尔格达经丹德拉前往卢克索，车程约 3 小时。",
-          "沿途景点：丹德拉神庙（停留时间待补充替代）。",
-          "下午：尼罗河东岸卢克索市区自由活动。",
+          "08:00 从赫尔格达出发，车程约 3 小时。",
+          "沿途停留丹德拉神庙（具体时间待补充替代）。",
+          "下午：卢克索东岸自由活动。",
           "晚餐餐厅推荐：Sofra / Loqma。"
         ],
-        note: "车上行程中途安排路餐或午餐（待补充替代）。",
+        note: "车上路餐或途中午餐，具体安排待补充替代。",
         hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
         cost: "待补充替代",
         startTime: "08:00",
@@ -488,13 +535,13 @@
         weekday: "周一",
         timeSlot: "清晨至下午",
         city: "卢克索",
-        plan: "清晨体验热气球项目，之后前往西岸帝王谷、哈特谢普苏特神庙等景点，午餐在 Oriental 餐厅。",
+        plan: "清晨热气球体验，之后参观西岸景点：帝王谷、王后谷、女王庙等，午餐在 Oriental 餐厅。",
         details: [
-          "清晨：热气球飞行，预计用时约 3 小时，含接送与飞行（集合时间约 06:00，实际以预订为准）。",
-          "白天：卢克索西岸观光，景点包括帝王谷、王后谷、女王庙等。",
-          "午餐：Oriental 餐厅，时间约 13:30–15:00。"
+          "清晨：热气球飞行，预计全程约 3 小时，含接送与飞行。",
+          "白天：西岸观光，景点包含帝王谷、王后谷、女王庙等（实际顺序以当地安排为准）。",
+          "午餐：Oriental 餐厅 13:30–15:00。"
         ],
-        note: "若当天风况不适合热气球，则热气球调整为 11 月 25 日。",
+        note: "如风况不佳，热气球顺延至 11 月 25 日。",
         hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
         cost: "待补充替代",
         startTime: "04:30",
@@ -506,13 +553,13 @@
         weekday: "周二",
         timeSlot: "白天与夜间",
         city: "卢克索",
-        plan: "视天气情况安排热气球备用场次，并参观卡尔纳克神庙与卢克索神庙，夜间观赏夜景。",
+        plan: "根据情况安排热气球备用场次，参观卡尔纳克神庙与卢克索神庙，夜间可观赏灯光夜景。",
         details: [
-          "如 11 月 24 日热气球取消，则在 11 月 25 日清晨起飞，时长约 3 小时。",
+          "如前一日热气球未成行，则在 11 月 25 日清晨起飞，约 3 小时。",
           "下午：卡尔纳克神庙参观（开放时间待补充替代）。",
-          "傍晚或夜间：卢克索神庙夜景。"
+          "傍晚或夜间：卢克索神庙夜景参观。"
         ],
-        note: "当日根据热气球安排与景区开放时间进行微调。",
+        note: "具体时间根据景区开放与热气球安排进行调整。",
         hotel: "Steigenberger Resort Achti, Al Awameya, East Bank, 83951 Luxor, Egypt",
         cost: "待补充替代",
         startTime: "06:00",
@@ -524,14 +571,14 @@
         weekday: "周三",
         timeSlot: "上午至晚上",
         city: "卢克索 → 开罗",
-        plan: "上午在卢克索自由活动，下午乘机前往开罗，晚上在金字塔附近酒店入住并自由活动。",
+        plan: "上午在卢克索自由活动，下午搭乘航班前往开罗，入住金字塔附近酒店。",
         details: [
           "上午：卢克索市区漫步与自由时间。",
-          "下午：卢克索飞往开罗，航班 LXR → CAI · EgyptAir MS75 · 14:20 – 15:30。",
+          "下午：LXR → CAI · EgyptAir MS75 · 14:20 – 15:30。",
           "晚上：酒店周边自由活动。"
         ],
-        note: "航班为 MS75，需提前到达机场办理登机手续。",
-        hotel: "West Pyramids Hotel, 4 Abou Al Hool Al Seiahi, Giza, 3514542 Cairo, Egypt",
+        note: "需提前到达机场办理值机与安检。",
+        hotel: "West Pyramids Hotel, 4 Abou Al Hool Al Seiahi, Giza, Cairo, Egypt",
         cost: "待补充替代",
         startTime: "09:00",
         endTime: "22:30"
@@ -542,13 +589,13 @@
         weekday: "周四",
         timeSlot: "全天",
         city: "开罗",
-        plan: "参观萨拉丁城堡与穆罕默德·阿里清真寺，下午参观埃及博物馆，晚上登开罗塔并在旋转餐厅用餐。",
+        plan: "萨拉丁城堡与穆罕默德·阿里清真寺，下午埃及博物馆，晚上开罗塔与旋转餐厅晚餐。",
         details: [
           "上午：萨拉丁城堡 + 穆罕默德·阿里清真寺。",
-          "下午：埃及博物馆参观，控制在约 2 小时内。",
-          "晚上：开罗塔，旋转餐厅晚餐。"
+          "下午：埃及博物馆参观，停留约 2 小时。",
+          "晚上：开罗塔 + 旋转餐厅晚餐。"
         ],
-        note: "登塔与餐厅建议提前预订时间。",
+        note: "塔顶及餐厅需提前预约时间。",
         hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
         cost: "待补充替代",
         startTime: "09:00",
@@ -560,13 +607,13 @@
         weekday: "周五",
         timeSlot: "全天",
         city: "开罗",
-        plan: "前往吉萨金字塔景区与狮身人面像，大埃及博物馆（GEM），晚上休息。",
+        plan: "吉萨金字塔与狮身人面像，大埃及博物馆（GEM），晚上休息。",
         details: [
-          "上午：吉萨金字塔群 + 狮身人面像。",
-          "下午：大埃及博物馆（GEM）参观。",
+          "上午：吉萨金字塔群 + 狮身人面像，预留充足时间拍照与步行。",
+          "下午：大埃及博物馆（GEM），按预约时段参观。",
           "晚上：返回住宿地休息。"
         ],
-        note: "GEM 开放安排与参观时段依官网通知更新。",
+        note: "GEM 开放与预约规则如有更新，可根据官方信息调整参观时段。",
         hotel: "Classic Style 3 bedrooms Zamalek apartment, Zamalek, Cairo（详细地址待补充替代）",
         cost: "待补充替代",
         startTime: "09:00",
@@ -578,14 +625,14 @@
         weekday: "周六",
         timeSlot: "全天",
         city: "开罗",
-        plan: "参观文明类博物馆与洞穴教堂，下午前往哈利利市集与 Zamalek 半岛 city walk，晚上在本地餐厅用餐。",
+        plan: "文明类博物馆与洞穴教堂，下午哈利利市集 + Zamalek 半岛 city walk，晚上本地轻食或酒店休息。",
         details: [
-          "上午：文明类博物馆（具体名称与时间待补充替代）。",
-          "中午：洞穴教堂（Cave Church），出发时间参考预订安排。",
+          "上午：文明相关博物馆（具体馆名与时间待补充替代）。",
+          "中午：洞穴教堂（Cave Church）参观，出发时间约早上 9 点。",
           "下午：哈利利市集 + Zamalek 半岛 city walk。",
-          "晚上：酒店附近餐厅或轻食。"
+          "晚上：酒店附近本地餐厅轻食或回房休息。"
         ],
-        note: "当日为城市文化与市集体验日，节奏可根据实际情况调整。",
+        note: "当日以轻松城市体验为主，可根据体力微调节奏。",
         hotel: "Cairo Heliopolis Apartment, 1, Heliopolis, 11799 Cairo, Egypt",
         cost: "待补充替代",
         startTime: "08:30",
@@ -597,20 +644,21 @@
         weekday: "周日",
         timeSlot: "上午至晚上",
         city: "开罗 → 德国",
-        plan: "从开罗机场出发，经法兰克福或慕尼黑返回德国，结束本次行程。",
+        plan: "从开罗机场出发，经法兰克福或慕尼黑返回德国，行程结束。",
         details: [
           "CAI → MUC · EgyptAir MS787 · 10:05 – 13:10。",
           "CAI → FRA · Lufthansa LH583 · 16:55 – 20:30。",
           "根据机票实际信息选择对应航班。"
         ],
-        note: "需预留约 3 小时在机场办理值机与安检等手续。",
-        hotel: "无（前一晚入住 Cairo Heliopolis Apartment，清晨退房前往机场）。",
+        note: "建议至少提前 3 小时抵达机场。",
+        hotel: "无（前一晚入住 Cairo Heliopolis Apartment，清晨退房后前往机场）。",
         cost: "待补充替代",
         startTime: "06:00",
         endTime: "23:00"
       }
     ];
 
+    // ---- 工具函数：把“某天某时”的字符串转成指定时区的 Date ----
     function toZonedDate(dateStr, timeStr, timeZone) {
       const [year, month, day] = dateStr.split("-").map(Number);
       const [hour, minute] = timeStr.split(":").map(Number);
@@ -642,7 +690,7 @@
       return new Date(str);
     }
 
-    // 预处理：计算开始结束时间并排序
+    // 预处理：计算 block 开始结束时间并排序
     tripBlocks.forEach(block => {
       block.startDate = toZonedDate(block.date, block.startTime, TRIP_TIMEZONE);
       block.endDate = toZonedDate(block.date, block.endTime, TRIP_TIMEZONE);
@@ -759,8 +807,28 @@
       }
     }
 
+    // 菜单切换：Timeline / Wiki
+    function setupNav() {
+      const buttons = document.querySelectorAll(".nav-item");
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const page = btn.dataset.page;
+          buttons.forEach(b => b.classList.remove("nav-active"));
+          btn.classList.add("nav-active");
+          document
+            .querySelectorAll(".page")
+            .forEach(p => p.classList.remove("page-active"));
+          document
+            .getElementById(`page-${page}`)
+            .classList.add("page-active");
+        });
+      });
+    }
+
+    // 初始化
     renderTimeline();
     activateCurrentBlock();
+    setupNav();
     setInterval(activateCurrentBlock, 5 * 60 * 1000);
   </script>
 </body>
